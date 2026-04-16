@@ -1,535 +1,172 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>3D Calc · Bambu Lab</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Calc Pro</title>
+
 <style>
-  :root {
-    --bg: #0d0d0d;
-    --panel: #161616;
-    --border: #2a2a2a;
-    --accent: #00e5a0;
-    --accent2: #ff6b35;
-    --text: #f0f0f0;
-    --muted: #666;
-    --input-bg: #1e1e1e;
-  }
+body {
+  background:#0e0e0e;
+  color:#fff;
+  font-family: monospace;
+  max-width:400px;
+  margin:auto;
+  padding:20px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+.box {
+  background:#1a1a1a;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    min-height: 100dvh;
-    padding: 20px 16px 40px;
-    max-width: 420px;
-    margin: 0 auto;
-  }
+input {
+  width:100%;
+  padding:10px;
+  background:#111;
+  border:1px solid #333;
+  color:#fff;
+  border-radius:8px;
+}
 
-  /* Header */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-    padding-top: 8px;
-  }
+button {
+  width:100%;
+  padding:14px;
+  background:#00a86b;
+  border:none;
+  color:#fff;
+  border-radius:10px;
+  margin-top:10px;
+}
 
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.3rem;
-    letter-spacing: -0.03em;
-    color: var(--text);
-  }
-  .logo span { color: var(--accent); }
+.result {
+  border:1px solid #00a86b;
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+}
 
-  .badge {
-    background: #1a1a1a;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
+.toggle {
+  display:flex;
+  gap:10px;
+}
 
-  /* Sections */
-  .section {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 14px;
-  }
+.toggle button {
+  flex:1;
+  background:#222;
+}
 
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* Inputs */
-  .field {
-    margin-bottom: 14px;
-  }
-  .field:last-child { margin-bottom: 0; }
-
-  label {
-    display: block;
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: 0.04em;
-  }
-
-  .input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  input[type="number"], input[type="text"] {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 1rem;
-    padding: 12px 46px 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  input[type="number"]:focus, input[type="text"]:focus {
-    border-color: var(--accent);
-  }
-
-  .unit {
-    position: absolute;
-    right: 14px;
-    font-size: 0.72rem;
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  /* Margin slider */
-  .margin-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-  .margin-value {
-    font-family: 'Syne', sans-serif;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--accent);
-    min-width: 70px;
-    text-align: right;
-  }
-  .margin-label { font-size: 0.75rem; color: var(--muted); }
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0,229,160,0.4);
-  }
-
-  /* Presets */
-  .presets {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .preset-btn {
-    background: var(--input-bg);
-    border: 1.5px solid var(--border);
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .preset-btn:active, .preset-btn.active {
-    background: rgba(0,229,160,0.1);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Calc button */
-  .calc-btn {
-    width: 100%;
-    padding: 16px;
-    background: var(--accent);
-    color: #0d0d0d;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 14px;
-  }
-  .calc-btn:active {
-    transform: scale(0.97);
-    background: #00c98c;
-  }
-
-  /* Result */
-  .result-panel {
-    background: var(--panel);
-    border: 1.5px solid var(--accent);
-    border-radius: 14px;
-    padding: 20px;
-    display: none;
-  }
-  .result-panel.show { display: block; }
-
-  .result-main {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .result-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .result-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .breakdown {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .breakdown-item {
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-  }
-  .breakdown-item .val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .breakdown-item .lbl {
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .breakdown-item.highlight .val { color: var(--accent2); }
-
-  /* Divisor */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 14px 0;
-  }
-
-  /* Copy button */
-  .copy-btn {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    cursor: pointer;
-    margin-top: 14px;
-    transition: all 0.15s;
-  }
-  .copy-btn:active {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Tip */
-  .tip {
-    background: rgba(0,229,160,0.06);
-    border: 1px solid rgba(0,229,160,0.15);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.68rem;
-    color: #888;
-    line-height: 1.6;
-    margin-top: 14px;
-  }
-  .tip b { color: var(--accent); }
-
-  /* Remove arrows from number inputs */
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.active {
+  background:#00a86b !important;
+}
 </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">3D<span>calc</span></div>
-  <div class="badge">Bambu Lab Mini</div>
-</header>
+<h2>3D Calc PRO</h2>
 
-<!-- Configurações -->
-<div class="section">
-  <div class="section-title">Config do filamento</div>
-
-  <div class="field">
-    <label>Preço do rolo de filamento</label>
-    <div class="input-wrap">
-      <input type="number" id="preco_rolo" value="100" inputmode="decimal">
-      <span class="unit">R$</span>
-    </div>
-  </div>
-
-  <div class="field">
-    <label>Peso do rolo</label>
-    <div class="input-wrap">
-      <input type="number" id="peso_rolo" value="1000" inputmode="decimal">
-      <span class="unit">g</span>
-    </div>
-  </div>
-
-  <div class="field">
-    <label>Custo da energia elétrica (kWh)</label>
-    <div class="input-wrap">
-      <input type="number" id="custo_kwh" value="0.85" inputmode="decimal" step="0.01">
-      <span class="unit">R$</span>
-    </div>
-  </div>
+<div class="box">
+Modo:
+<div class="toggle">
+<button id="realBtn" class="active" onclick="setModo('real')">REAL</button>
+<button id="vendaBtn" onclick="setModo('venda')">VENDA</button>
+</div>
 </div>
 
-<!-- Dados da peça -->
-<div class="section">
-  <div class="section-title">Dados da peça</div>
-
-  <div class="field">
-    <label>Peso do filamento usado</label>
-    <div class="input-wrap">
-      <input type="number" id="peso_peca" placeholder="Ex: 45" inputmode="decimal">
-      <span class="unit">g</span>
-    </div>
-  </div>
-
-  <div class="field">
-    <label>Tempo de impressão</label>
-    <div style="display:flex; gap:8px;">
-      <div class="input-wrap" style="flex:1">
-        <input type="number" id="horas" placeholder="0" inputmode="numeric">
-        <span class="unit">h</span>
-      </div>
-      <div class="input-wrap" style="flex:1">
-        <input type="number" id="minutos" placeholder="0" inputmode="numeric">
-        <span class="unit">m</span>
-      </div>
-    </div>
-  </div>
+<div class="box">
+Preço do rolo (R$)
+<input id="rolo" value="100">
 </div>
 
-<!-- Margem -->
-<div class="section">
-  <div class="section-title">Margem de lucro</div>
-
-  <div class="margin-display">
-    <div>
-      <div class="margin-label">Lucro sobre custo</div>
-    </div>
-    <div class="margin-value" id="margin-display">50%</div>
-  </div>
-
-  <input type="range" id="margem" min="0" max="500" value="50" step="5">
-
-  <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.62rem; color:var(--muted);">
-    <span>0%</span><span>100%</span><span>200%</span><span>300%</span><span>500%</span>
-  </div>
-
-  <div style="margin-top:14px;">
-    <div class="section-title" style="margin-bottom:10px;">Margem rápida</div>
-    <div class="presets">
-      <button class="preset-btn" onclick="setMargem(30)">30%</button>
-      <button class="preset-btn active" onclick="setMargem(50)">50%</button>
-      <button class="preset-btn" onclick="setMargem(100)">100%</button>
-      <button class="preset-btn" onclick="setMargem(150)">150%</button>
-      <button class="preset-btn" onclick="setMargem(200)">200%</button>
-      <button class="preset-btn" onclick="setMargem(300)">300%</button>
-    </div>
-  </div>
+<div class="box">
+Energia (R$/kWh)
+<input id="kwh" value="0.75">
 </div>
 
-<!-- Botão -->
-<button class="calc-btn" onclick="calcular()">▶ Calcular Preço</button>
-
-<!-- Resultado -->
-<div class="result-panel" id="resultado">
-  <div class="result-main">
-    <div class="result-label">Preço de venda sugerido</div>
-    <div class="result-price" id="res-venda">R$ 0,00</div>
-  </div>
-
-  <div class="breakdown">
-    <div class="breakdown-item">
-      <div class="val" id="res-filamento">R$ 0,00</div>
-      <div class="lbl">Filamento</div>
-    </div>
-    <div class="breakdown-item">
-      <div class="val" id="res-energia">R$ 0,00</div>
-      <div class="lbl">Energia</div>
-    </div>
-    <div class="breakdown-item">
-      <div class="val" id="res-custo">R$ 0,00</div>
-      <div class="lbl">Custo total</div>
-    </div>
-    <div class="breakdown-item highlight">
-      <div class="val" id="res-lucro">R$ 0,00</div>
-      <div class="lbl">Lucro</div>
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div style="font-size:0.68rem; color:var(--muted); line-height:1.8;">
-    <div>📦 Filamento: <span id="res-g">0g</span> · R$ <span id="res-g-price">0,00</span>/g</div>
-    <div>⏱ Tempo: <span id="res-tempo">0h 0m</span> · Bambu Mini ~<b>6W</b> médio</div>
-    <div>📈 Margem aplicada: <span id="res-margem-txt">50%</span></div>
-  </div>
-
-  <button class="copy-btn" onclick="copiarResultado()">📋 Copiar resumo</button>
+<div class="box">
+Peso (g)
+<input id="g">
+Tempo (h)
+<input id="h">
 </div>
 
-<div class="tip">
-  <b>💡 Dica iPhone:</b> Salva esta página no Safari e toca em <b>Compartilhar → Adicionar à Tela de Início</b>. Vira um atalho como app!
+<div class="box">
+Custo por hora (R$)
+<input id="hora" value="3">
+
+Custo fixo (R$)
+<input id="fixo" value="5">
+
+Preço mínimo (R$)
+<input id="min" value="15">
 </div>
+
+<div class="box">
+Margem: <span id="mVal">50%</span>
+<input type="range" min="0" max="300" value="50" id="m">
+</div>
+
+<button onclick="calc()">CALCULAR</button>
+
+<div class="result" id="res" style="display:none"></div>
 
 <script>
-  const BAMBU_MINI_W = 120; // Watts médios (pico ~120W, médio ~80-120W)
+let modo = "real"
 
-  // Slider margem
-  const slider = document.getElementById('margem');
-  const margemDisplay = document.getElementById('margin-display');
+function setModo(m){
+  modo = m
+  realBtn.classList.remove("active")
+  vendaBtn.classList.remove("active")
+  if(m==="real") realBtn.classList.add("active")
+  else vendaBtn.classList.add("active")
+}
 
-  slider.addEventListener('input', () => {
-    margemDisplay.textContent = slider.value + '%';
-    updatePresetButtons();
-  });
+m.oninput = () => mVal.innerText = m.value+"%"
 
-  function setMargem(val) {
-    slider.value = val;
-    margemDisplay.textContent = val + '%';
-    updatePresetButtons();
-  }
+function calc(){
 
-  function updatePresetButtons() {
-    document.querySelectorAll('.preset-btn').forEach(btn => {
-      btn.classList.remove('active');
-      const v = parseInt(btn.textContent);
-      if (v === parseInt(slider.value)) btn.classList.add('active');
-    });
-  }
+let rolo = roloInput()
+let g = val("g")
+let h = val("h")
+let kwh = val("kwh")
+let margem = val("m")/100
+let hora = val("hora")
+let fixo = val("fixo")
+let min = val("min")
 
-  function fmt(n) {
-    return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
+let custoFil = g*(rolo/1000)
 
-  function calcular() {
-    const precoRolo = parseFloat(document.getElementById('preco_rolo').value) || 100;
-    const pesoRolo  = parseFloat(document.getElementById('peso_rolo').value)  || 1000;
-    const custoKwh  = parseFloat(document.getElementById('custo_kwh').value)  || 0.85;
-    const pesoPeca  = parseFloat(document.getElementById('peso_peca').value)  || 0;
-    const horas     = parseFloat(document.getElementById('horas').value)      || 0;
-    const minutos   = parseFloat(document.getElementById('minutos').value)    || 0;
-    const margem    = parseFloat(slider.value) / 100;
+let custoEner = (modo==="real")
+? (120/1000)*h*kwh
+: h*hora
 
-    if (pesoPeca <= 0) { alert('Informe o peso da peça!'); return; }
-    if (horas === 0 && minutos === 0) { alert('Informe o tempo de impressão!'); return; }
+let custo = custoFil + custoEner + fixo
 
-    const gPrice    = precoRolo / pesoRolo;
-    const custoFil  = pesoPeca * gPrice;
-    const tempoH    = horas + (minutos / 60);
-    const custoEner = (BAMBU_MINI_W / 1000) * tempoH * custoKwh;
-    const custoTotal = custoFil + custoEner;
-    const lucro     = custoTotal * margem;
-    const venda     = custoTotal + lucro;
+let venda = custo + (custo*margem)
 
-    document.getElementById('res-venda').textContent    = fmt(venda);
-    document.getElementById('res-filamento').textContent = fmt(custoFil);
-    document.getElementById('res-energia').textContent  = fmt(custoEner);
-    document.getElementById('res-custo').textContent    = fmt(custoTotal);
-    document.getElementById('res-lucro').textContent    = fmt(lucro);
-    document.getElementById('res-g').textContent        = pesoPeca + 'g';
-    document.getElementById('res-g-price').textContent  = gPrice.toFixed(3).replace('.',',');
-    document.getElementById('res-tempo').textContent    = horas + 'h ' + Math.round(minutos) + 'm';
-    document.getElementById('res-margem-txt').textContent = slider.value + '%';
+if(modo==="venda" && venda < min) venda = min
 
-    document.getElementById('resultado').classList.add('show');
-    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+res.style.display="block"
+res.innerHTML = `
+<h3>💰 R$ ${venda.toFixed(2)}</h3>
+Filamento: ${custoFil.toFixed(2)}<br>
+Energia: ${custoEner.toFixed(2)}<br>
+Custo: ${custo.toFixed(2)}<br>
+Lucro: ${(venda-custo).toFixed(2)}
+`
+}
 
-  function copiarResultado() {
-    const venda   = document.getElementById('res-venda').textContent;
-    const custo   = document.getElementById('res-custo').textContent;
-    const lucro   = document.getElementById('res-lucro').textContent;
-    const margem  = document.getElementById('res-margem-txt').textContent;
-    const tempo   = document.getElementById('res-tempo').textContent;
-    const gramas  = document.getElementById('res-g').textContent;
+function val(id){
+return parseFloat(document.getElementById(id).value)||0
+}
 
-    const txt = `🖨️ Impressão 3D · Bambu Lab Mini\n💰 Venda: ${venda}\n📦 Custo: ${custo} | Lucro: ${lucro}\n📈 Margem: ${margem}\n⏱ Tempo: ${tempo} · ${gramas}`;
-
-    navigator.clipboard.writeText(txt).then(() => {
-      const btn = document.querySelector('.copy-btn');
-      btn.textContent = '✅ Copiado!';
-      setTimeout(() => btn.textContent = '📋 Copiar resumo', 2000);
-    }).catch(() => alert(txt));
-  }
+function roloInput(){
+return parseFloat(document.getElementById("rolo").value)||100
+}
 </script>
+
 </body>
 </html>

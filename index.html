@@ -3,170 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Calc Pro</title>
-
+<title>3D Calc</title>
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background:#0e0e0e;
-  color:#fff;
-  font-family: monospace;
-  max-width:400px;
-  margin:auto;
-  padding:20px;
+  background: #0e0e0e;
+  color: #fff;
+  font-family: sans-serif;
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
 }
 
-.box {
-  background:#1a1a1a;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:12px;
+.calc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+.calc-header-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: #0d2e1f;
+  display: flex; align-items: center; justify-content: center;
+}
+.calc-header-icon svg { width: 18px; height: 18px; stroke: #00a86b; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.calc-title { font-size: 18px; font-weight: 500; color: #fff; }
+.calc-subtitle { font-size: 13px; color: #888; }
+
+.card {
+  background: #1a1a1a;
+  border: 0.5px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 12px;
 }
 
-input {
-  width:100%;
-  padding:10px;
-  background:#111;
-  border:1px solid #333;
-  color:#fff;
-  border-radius:8px;
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  font-size: 12px; font-weight: 500; color: #888;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
 }
+.field-label-unit { font-weight: 400; text-transform: none; letter-spacing: 0; color: #555; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-button {
-  width:100%;
-  padding:14px;
-  background:#00a86b;
-  border:none;
-  color:#fff;
-  border-radius:10px;
-  margin-top:10px;
+input[type=number] {
+  width: 100%; padding: 9px 12px;
+  border: 0.5px solid #333;
+  border-radius: 8px;
+  font-size: 15px; font-family: sans-serif;
+  color: #fff; background: #111;
+  outline: none; transition: border-color 0.15s;
 }
+input[type=number]:focus { border-color: #00a86b; box-shadow: 0 0 0 3px rgba(0,168,107,0.12); }
+input[type=number]::placeholder { color: #444; }
 
-.result {
-  border:1px solid #00a86b;
-  padding:15px;
-  border-radius:12px;
-  margin-top:10px;
-}
+.section-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 10px; }
 
-.toggle {
-  display:flex;
-  gap:10px;
-}
+.margin-row { display: flex; align-items: center; gap: 12px; }
+.margin-val { font-size: 20px; font-weight: 500; color: #00a86b; min-width: 52px; text-align: right; }
+input[type=range] { flex: 1; accent-color: #00a86b; }
 
-.toggle button {
-  flex:1;
-  background:#222;
+.calc-btn {
+  width: 100%; padding: 13px;
+  background: #00a86b; border: none; color: #fff;
+  border-radius: 12px; font-size: 15px; font-weight: 500;
+  font-family: sans-serif; cursor: pointer;
+  transition: background 0.15s, transform 0.1s; margin-top: 4px;
 }
+.calc-btn:hover { background: #009960; }
+.calc-btn:active { transform: scale(0.98); }
 
-.active {
-  background:#00a86b !important;
+.result { display: none; margin-top: 12px; }
+
+.result-price {
+  background: #0d2e1f;
+  border: 0.5px solid #00a86b;
+  border-radius: 12px; padding: 1.25rem;
+  margin-bottom: 10px; text-align: center;
 }
+.result-price-label { font-size: 12px; font-weight: 500; color: #00a86b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.result-price-value { font-size: 36px; font-weight: 500; color: #00a86b; line-height: 1.1; }
+
+.result-breakdown {
+  background: #1a1a1a;
+  border: 0.5px solid #2a2a2a;
+  border-radius: 12px; overflow: hidden; margin-bottom: 10px;
+}
+.result-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 1.25rem; font-size: 14px; }
+.result-row + .result-row { border-top: 0.5px solid #2a2a2a; }
+.result-row-label { color: #888; }
+.result-row-val { font-weight: 500; color: #fff; font-variant-numeric: tabular-nums; }
+.result-row.profit { background: #111; }
+.result-row.profit .result-row-val { color: #00a86b; }
+
+.copy-area { position: relative; }
+.copy-textarea {
+  width: 100%; background: #111;
+  border: 0.5px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 12px 1.25rem; padding-right: 90px;
+  font-size: 13px; font-family: monospace;
+  color: #888; line-height: 1.7;
+  resize: none; outline: none; min-height: 100px;
+}
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  padding: 5px 12px;
+  background: #1a1a1a; border: 0.5px solid #333;
+  border-radius: 8px; font-size: 12px; font-weight: 500;
+  font-family: sans-serif; color: #fff;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.copy-btn:hover { background: #222; }
+.copy-btn.copied { color: #00a86b; border-color: #00a86b; }
 </style>
 </head>
-
 <body>
 
-<h2>3D Calc PRO</h2>
-
-<div class="box">
-Modo:
-<div class="toggle">
-<button id="realBtn" class="active" onclick="setModo('real')">REAL</button>
-<button id="vendaBtn" onclick="setModo('venda')">VENDA</button>
-</div>
-</div>
-
-<div class="box">
-Preço do rolo (R$)
-<input id="rolo" value="100">
+<div class="calc-header">
+  <div class="calc-header-icon">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+  </div>
+  <div>
+    <div class="calc-title">3D Calc</div>
+    <div class="calc-subtitle">Precificação de impressão 3D</div>
+  </div>
 </div>
 
-<div class="box">
-Energia (R$/kWh)
-<input id="kwh" value="0.75">
+<div class="card">
+  <div class="section-title">Material</div>
+  <div class="field">
+    <div class="field-label">Preço do rolo <span class="field-label-unit">R$</span></div>
+    <input type="number" id="rolo" value="100" placeholder="100">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <div class="field-label">Peso <span class="field-label-unit">g</span></div>
+      <input type="number" id="g" placeholder="Ex: 46">
+    </div>
+    <div class="field">
+      <div class="field-label">Tempo <span class="field-label-unit">horas</span></div>
+      <input type="number" id="h" placeholder="Ex: 4.5" step="0.5">
+    </div>
+  </div>
 </div>
 
-<div class="box">
-Peso (g)
-<input id="g">
-Tempo (h)
-<input id="h">
+<div class="card">
+  <div class="section-title">Margem de lucro</div>
+  <div class="margin-row">
+    <input type="range" min="0" max="300" value="50" id="m">
+    <div class="margin-val" id="mVal">50%</div>
+  </div>
 </div>
 
-<div class="box">
-Custo por hora (R$)
-<input id="hora" value="3">
+<button class="calc-btn" onclick="calc()">Calcular preço</button>
 
-Custo fixo (R$)
-<input id="fixo" value="5">
-
-Preço mínimo (R$)
-<input id="min" value="15">
+<div class="result" id="res">
+  <div class="result-price">
+    <div class="result-price-label">Preço de venda</div>
+    <div class="result-price-value" id="r-venda">R$ 0,00</div>
+  </div>
+  <div class="result-breakdown">
+    <div class="result-row">
+      <span class="result-row-label">Filamento</span>
+      <span class="result-row-val" id="r-fil">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Tempo de máquina</span>
+      <span class="result-row-val" id="r-tempo">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Custo total</span>
+      <span class="result-row-val" id="r-custo">—</span>
+    </div>
+    <div class="result-row profit">
+      <span class="result-row-label">Lucro</span>
+      <span class="result-row-val" id="r-lucro">—</span>
+    </div>
+  </div>
+  <div class="copy-area">
+    <textarea class="copy-textarea" id="copy-text" readonly></textarea>
+    <button class="copy-btn" id="copy-btn" onclick="copyText()">Copiar</button>
+  </div>
 </div>
-
-<div class="box">
-Margem: <span id="mVal">50%</span>
-<input type="range" min="0" max="300" value="50" id="m">
-</div>
-
-<button onclick="calc()">CALCULAR</button>
-
-<div class="result" id="res" style="display:none"></div>
 
 <script>
-let modo = "real"
+const fmt = v => 'R$ ' + v.toFixed(2).replace('.', ',');
 
-function setModo(m){
-  modo = m
-  realBtn.classList.remove("active")
-  vendaBtn.classList.remove("active")
-  if(m==="real") realBtn.classList.add("active")
-  else vendaBtn.classList.add("active")
+document.getElementById('m').oninput = function() {
+  document.getElementById('mVal').innerText = this.value + '%';
+};
+
+function val(id) {
+  return parseFloat(document.getElementById(id).value) || 0;
 }
 
-m.oninput = () => mVal.innerText = m.value+"%"
+function calc() {
+  let rolo = val('rolo');
+  let g = val('g');
+  let h = val('h');
+  let margem = val('m') / 100;
 
-function calc(){
+  const custoHora = 3;
+  const custoFixo = 5;
+  const precoMin = 15;
 
-let rolo = roloInput()
-let g = val("g")
-let h = val("h")
-let kwh = val("kwh")
-let margem = val("m")/100
-let hora = val("hora")
-let fixo = val("fixo")
-let min = val("min")
+  let custoFil = g * (rolo / 1000);
+  let custoTempo = h * custoHora;
+  let custo = custoFil + custoTempo + custoFixo;
+  let venda = custo + (custo * margem);
 
-let custoFil = g*(rolo/1000)
+  if (venda < precoMin) venda = precoMin;
 
-let custoEner = (modo==="real")
-? (120/1000)*h*kwh
-: h*hora
+  document.getElementById('r-venda').innerText = fmt(venda);
+  document.getElementById('r-fil').innerText = fmt(custoFil);
+  document.getElementById('r-tempo').innerText = fmt(custoTempo);
+  document.getElementById('r-custo').innerText = fmt(custo);
+  document.getElementById('r-lucro').innerText = fmt(venda - custo);
 
-let custo = custoFil + custoEner + fixo
+  const texto =
+    '💰 Preço de venda: ' + fmt(venda) + '\n' +
+    'Filamento: ' + fmt(custoFil) + '\n' +
+    'Tempo máquina: ' + fmt(custoTempo) + '\n' +
+    'Custo total: ' + fmt(custo) + '\n' +
+    'Lucro: ' + fmt(venda - custo);
 
-let venda = custo + (custo*margem)
+  document.getElementById('copy-text').value = texto;
 
-if(modo==="venda" && venda < min) venda = min
+  const btn = document.getElementById('copy-btn');
+  btn.classList.remove('copied');
+  btn.innerText = 'Copiar';
 
-res.style.display="block"
-res.innerHTML = `
-<h3>💰 R$ ${venda.toFixed(2)}</h3>
-Filamento: ${custoFil.toFixed(2)}<br>
-Energia: ${custoEner.toFixed(2)}<br>
-Custo: ${custo.toFixed(2)}<br>
-Lucro: ${(venda-custo).toFixed(2)}
-`
+  document.getElementById('res').style.display = 'block';
 }
 
-function val(id){
-return parseFloat(document.getElementById(id).value)||0
-}
-
-function roloInput(){
-return parseFloat(document.getElementById("rolo").value)||100
+function copyText() {
+  const ta = document.getElementById('copy-text');
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy'));
+  const btn = document.getElementById('copy-btn');
+  btn.innerText = 'Copiado!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.innerText = 'Copiar'; btn.classList.remove('copied'); }, 2000);
 }
 </script>
-
 </body>
 </html>
